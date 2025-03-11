@@ -72,7 +72,7 @@
         const email = prompt('Enter your email to sign in:');
         const auth = getAuth();
         const actionCodeSettings = {
-          url: `https://cautious-winner-69r4gq5vwqgv277v-8080.app.github.dev/products/${this.productId}`,
+          url: `https://full-stack-vue-deployment-dm.onrender.com/products/${this.productId}`,
           handleCodeInApp: true,
         };
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);

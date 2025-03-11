@@ -17,6 +17,11 @@ async function start() {
 
   app.use('/images', express.static(path.join(__dirname, '../assets')));
 
+  app.use(express.static(
+    path.resolve(__dirname, '../dist'),
+    { maxAge: '1y', etag: false },
+  ));
+
   app.get('/api/products', async (req, res) => {
     const products = await db.collection('products').find({}).toArray();
     res.json(products);
@@ -32,14 +37,15 @@ async function start() {
   app.get('/api/users/:userId/cart', async ({ params }, res) => {
     const user = await db.collection('users').findOne({ id: params.userId });
     const cart = await getCartProducts(user?.cartItems ?? []);
-
     res.json(cart);
   });
 
   // Returns true if the given product is in the cart, otherwise false
   app.get('/api/users/:userId/cart/:productId', async ({ params }, res) => {
-    const user = await db.collection('users').findOne({ id: params.userId });
-    res.json(user?.cartItems?.includes(params.productId) ?? false);
+    const { userId, productId } = params;
+
+    const user = await db.collection('users').findOne({ id: userId });
+    res.json(user?.cartItems?.includes(productId) ?? false);
   });
 
   // Add product to cart
@@ -62,11 +68,13 @@ async function start() {
 
   // Remove product from cart
   app.delete('/api/users/:userId/cart/:productId', async ({ params }, res) => {
-    await db.collection('users').updateOne( {id: params.userId}, {
-      $pull: { cartItems: params.productId }
+    const { userId, productId } = params;
+
+    await db.collection('users').updateOne({ id: userId }, {
+      $pull: { cartItems: productId }
     });
 
-    const user = await db.collection('users').findOne({ id: params.userId });
+    const user = await db.collection('users').findOne({ id: userId });
     const cart = await getCartProducts(user?.cartItems ?? [])
     res.json(cart);
   });
@@ -77,8 +85,14 @@ async function start() {
     res.json(product);
   });
 
-  app.listen(8000, () => {
-    console.log('Server is listening on port 8000');
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+  });
+
+  const port = process.env.PORT ?? 8000;
+
+  app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
   });
 }
 
