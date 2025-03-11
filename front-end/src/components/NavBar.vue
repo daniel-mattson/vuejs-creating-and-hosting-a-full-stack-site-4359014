@@ -7,7 +7,7 @@
     </router-link>
   </div>
   <div class="nav-buttons-wrap">
-    <button v-if="user" @click="signOut">Sign Out</button>
+    <button v-if="user" @click="signOut" class="sign-out">Sign Out</button>
     <router-link to="/cart">
       <button>Shopping Cart</button>
     </router-link>

@@ -132,10 +132,8 @@ h1 {
   top: 16px;
 }
 
-.nav-buttons-wrap {
-  position: absolute;
-  right: 16px;
-  top: 16px;
+.sign-out {
+  margin-right: 16px;
 }
 
 .cart-link {
